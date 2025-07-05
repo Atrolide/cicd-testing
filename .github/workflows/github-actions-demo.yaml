@@ -10,6 +10,6 @@ jobs:
       - name: OS Check
         run: echo "OS - ${{ runner.os }}"
       - name: Repo Check
-        run: echo "Repo - {{ github.repository }}"
+        run: echo "Repo - ${{ github.repository }}"
       - name: Branch Check
-        run: echo "Branch - {{ github.ref }}"
+        run: echo "Branch - ${{ github.ref }}"
