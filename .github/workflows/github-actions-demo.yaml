@@ -44,7 +44,7 @@ jobs:
           echo "env=$ENV" >> $GITHUB_OUTPUT
   deploy-mock:
     needs: decide-env
-    runs-on: ${{ env.RUNNER }}
+    runs-on: ${ env.RUNNER }
     steps:
       - name: Mock deploy
         run: |
