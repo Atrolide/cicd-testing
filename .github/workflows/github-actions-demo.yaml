@@ -5,7 +5,7 @@ env:
   RUNNER: ubuntu-latest
 jobs:
   basic-info:
-    runs-on: {? {env.RUNNER: ''} : ''}
+    runs-on: ${env.RUNNER}
     steps:
       - name: Event Check
         run: echo "Event - ${{ github.event_name }}"
@@ -16,7 +16,7 @@ jobs:
       - name: Branch Check
         run: echo "Branch - ${{ github.ref }}"
   checkout:
-    runs-on: {? {env.RUNNER: ''} : ''}
+    runs-on: ${env.RUNNER}
     steps:
       - name: Checkout repo code
         uses: actions/checkout@v4
