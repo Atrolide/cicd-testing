@@ -1,11 +1,9 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} - testing
 on: [push]
-env:
-  RUNNER: ubuntu-latest
 jobs:
   basic-info:
-    runs-on: ${env.RUNNER}
+    runs-on: ubuntu-latest
     steps:
       - name: Event Check
         run: echo "Event - ${{ github.event_name }}"
@@ -16,7 +14,7 @@ jobs:
       - name: Branch Check
         run: echo "Branch - ${{ github.ref }}"
   checkout:
-    runs-on: ${env.RUNNER}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo code
         uses: actions/checkout@v4
@@ -24,7 +22,7 @@ jobs:
         run: ls -a ${{ github.workspace }}
   decide-env:
     needs: checkout
-    runs-on: ${ env.RUNNER }
+    runs-on: ubuntu-latest
     outputs:
       env: ${{ steps.set-env.outputs.env }}
     steps:
@@ -44,8 +42,8 @@ jobs:
           echo "env=$ENV" >> $GITHUB_OUTPUT
   deploy-mock:
     needs: decide-env
-    runs-on: ${ env.RUNNER }
+    runs-on: ubuntu-latest
     steps:
       - name: Mock deploy
         run: |
-          echo "Deploying app '${{ github.repository }}' to environment '${{ needs.decide-env.outputs.target-env }}'"
+          echo "Deploying app '${{ github.repository }}' to environment '${{ needs.decide-env.outputs.env }}'"
