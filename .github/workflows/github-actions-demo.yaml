@@ -1,8 +1,10 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} - testing
+
 on: [push]
+
 jobs:
-  basic-info:
+  context-info:
     runs-on: ubuntu-latest
     steps:
       - name: Event Check
@@ -12,26 +14,26 @@ jobs:
       - name: Repo Check
         run: echo "Repo - ${{ github.repository }}"
       - name: Branch Check
-        run: echo "Branch - ${{ github.ref }}"
-  checkout:
+        run: echo "Branch - ${{ github.ref_name }}"
+
+  checkout-code:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo code
         uses: actions/checkout@v4
       - name: Repo Content Check
         run: ls -a ${{ github.workspace }}
-  decide-env:
-    needs: checkout
+
+  detect-env:
+    needs: checkout-code
     runs-on: ubuntu-latest
     outputs:
       env: ${{ steps.set-env.outputs.env }}
     steps:
-      - name: Determine env
+      - name: Determine Environment
         id: set-env
         run: |
-          # Strip refs/heads/ from github.ref to get branch name
-          BRANCH="${GITHUB_REF#refs/heads/}"
-          echo "Branch is $BRANCH"
+          BRANCH="${{ github.ref_name }}"
           if [[ "$BRANCH" == "master" ]]; then
             ENV="prod"
           elif [[ "$BRANCH" == "syst" ]]; then
@@ -40,10 +42,11 @@ jobs:
             ENV="test"
           fi
           echo "env=$ENV" >> $GITHUB_OUTPUT
+
   deploy-mock:
-    needs: decide-env
+    needs: detect-env
     runs-on: ubuntu-latest
     steps:
       - name: Mock deploy
         run: |
-          echo "Deploying app '${{ github.repository }}' to environment '${{ needs.decide-env.outputs.env }}'"
+          echo "Deploying app '${{ github.repository }}' to environment '${{ needs.detect-env.outputs.env }}'"
