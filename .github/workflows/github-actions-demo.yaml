@@ -19,4 +19,4 @@ jobs:
       - name: Checkout repo code
         uses: actions/checkout@v4
       - name: Repo Content Check
-        run: ls ${{ github.workspace }}
+        run: ls -a ${{ github.workspace }}
