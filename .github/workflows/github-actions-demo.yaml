@@ -1,9 +1,11 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} - testing
 on: [push]
+env:
+  RUNNER: ubuntu-latest
 jobs:
   basic-info:
-    runs-on: ubuntu-latest
+    runs-on: {? {env.RUNNER: ''} : ''}
     steps:
       - name: Event Check
         run: echo "Event - ${{ github.event_name }}"
@@ -13,10 +15,37 @@ jobs:
         run: echo "Repo - ${{ github.repository }}"
       - name: Branch Check
         run: echo "Branch - ${{ github.ref }}"
-  repo-info:
-    runs-on: ubuntu-latest
+  checkout:
+    runs-on: {? {env.RUNNER: ''} : ''}
     steps:
       - name: Checkout repo code
         uses: actions/checkout@v4
       - name: Repo Content Check
         run: ls -a ${{ github.workspace }}
+  decide-env:
+    needs: checkout
+    runs-on: ${ env.RUNNER }
+    outputs:
+      env: ${{ steps.set-env.outputs.env }}
+    steps:
+      - name: Determine env
+        id: set-env
+        run: |
+          # Strip refs/heads/ from github.ref to get branch name
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          echo "Branch is $BRANCH"
+          if [[ "$BRANCH" == "master" ]]; then
+            ENV="prod"
+          elif [[ "$BRANCH" == "syst" ]]; then
+            ENV="syst"
+          else
+            ENV="test"
+          fi
+          echo "env=$ENV" >> $GITHUB_OUTPUT
+  deploy-mock:
+    needs: decide-env
+    runs-on: ${{ env.RUNNER }}
+    steps:
+      - name: Mock deploy
+        run: |
+          echo "Deploying app '${{ github.repository }}' to environment '${{ needs.decide-env.outputs.target-env }}'"
